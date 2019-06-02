@@ -505,8 +505,83 @@ void Game::Play()
 ostream &operator<<(ostream &os, const Card &aCard);
 ostream &operator<<(ostream &os, const GenericPlayer &aGenericPlayer);
 
-
 int main(int argc, char **argv)
 {
+    cout << "\t\tWelcome to Hotel Hermes, let's play some Blackjack\n\n";
+
+    int numPlayers = 0;
+
+    while (numPlayers < 1 || numPlayers > 7)
+    {
+        cout << "How many player? (1-7): ";
+        cin >> numPlayers;
+    }
+
+    vector<string> listOfNames;
+    string name;
+
+    for (int i = 0; i < numPlayers; i++)
+    {
+        cout << "Enter player name: ";
+        cin >> name;
+        listOfNames.push_back(name);
+    }
+
+    cout << endl;
+
+    // the game loop
+    Game theGame(listOfNames);
+
+    char again = 'y';
+    while (again != 'n' && again != 'N')
+    {
+        theGame.Play();
+        cout << "\nDo you want to play again? (Y/N): ";
+        cin >> again;
+    }
+
     return 0;
+}
+
+// overlord << operator so Card object can be sent to cout
+ostream &operator<<(ostream &os, const Card &aCard)
+{
+    const string RANKS[] = {"0", "A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"};
+    const string SUITS[] = {"Clubs", "Diamonds", "Hearts", "Spades"};
+
+    if (aCard.isFaceUp)
+    {
+        os << RANKS[aCard.cardRank] << " " << SUITS[aCard.cardSuit];
+    }
+    else
+    {
+        os << "XX";
+    }
+
+    return os;
+}
+
+// overlord << operator so a GenericPlayer object can be sent to output
+ostream &operator<<(ostream &os, const GenericPlayer &aGenericPlayer)
+{
+    os << aGenericPlayer.name << ":\t";
+
+    vector<Card *>::const_iterator cardPtr;
+    if (!aGenericPlayer.listOfCards.empty())
+    {
+        for (cardPtr = aGenericPlayer.listOfCards.begin(); cardPtr != aGenericPlayer.listOfCards.end(); cardPtr++)
+        {
+            os << *(*cardPtr) << "\t";
+        }
+
+        if (aGenericPlayer.GetTotal() != 0)
+        {
+            cout << "Total Card Value: [-- " << aGenericPlayer.GetTotal() << " --]";
+        }
+    }
+    else
+    {
+        os << "<empty>";
+    }
+    return os;
 }
